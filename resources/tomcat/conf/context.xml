@@ -15,5 +15,8 @@
   ~ limitations under the License.
   -->
 
-<Context>
+<Context privileged="false" crossContext="false" useHttpOnly="true">
+    <Manager secureRandomClass="java.security.SecureRandom">
+        <SessionIdGenerator sessionIdLength="32"/>
+    </Manager>
 </Context>
