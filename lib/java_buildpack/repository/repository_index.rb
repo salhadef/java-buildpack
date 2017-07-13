@@ -35,9 +35,11 @@ module JavaBuildpack
         @logger = JavaBuildpack::Logging::LoggerFactory.instance.get_logger RepositoryIndex
 
         if ENV.has_key? 'CF_REPO'
-            @default_repository_root = ENV['CF_REPO'].chomp('/')
+            @default_repository_root = ENV['CF_REPO']
+	                               .chomp('/')
         else
-            @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root'].chomp('/')
+            @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root']
+	                                                                      .chomp('/')
         end
 
         cache.get("#{canonical repository_root}#{INDEX_PATH}") do |file|
