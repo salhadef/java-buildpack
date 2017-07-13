@@ -1,6 +1,5 @@
-# Encoding: utf-8
 # Cloud Foundry Java Buildpack
-# Copyright 2013-2016 the original author or authors.
+# Copyright 2013-2017 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,13 +39,21 @@ describe JavaBuildpack::Framework::JrebelAgent do
     expect(component.detect).to eq("jrebel-agent=#{version}")
   end
 
+  context do
+    let(:configuration) { { 'enabled' => false } }
+
+    it 'does not detect when not enabled',
+       app_fixture: 'framework_jrebel_app_simple' do
+      expect(component.detect).to be_nil
+    end
+  end
+
   it 'downloads the JRebel JAR and the native agent',
      app_fixture: 'framework_jrebel_app_simple',
      cache_fixture: 'stub-jrebel-archive.zip' do
 
     component.compile
 
-    expect(sandbox + 'lib/jrebel.jar').to exist
     expect(sandbox + 'lib/libjrebel64.so').to exist
     expect(sandbox + 'lib/libjrebel32.so').to exist
   end
@@ -61,7 +68,6 @@ describe JavaBuildpack::Framework::JrebelAgent do
 
     expect(java_opts).to include('-agentpath:$PWD/.java-buildpack/jrebel_agent/lib/libjrebel64.so')
     expect(java_opts).to include('-Drebel.remoting_plugin=true')
-    expect(java_opts).to include('-Drebel.log=true')
     expect(java_opts).to include('-Drebel.cloud.platform=cloudfoundry/java-buildpack')
   end
 

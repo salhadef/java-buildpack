@@ -1,6 +1,5 @@
-# Encoding: utf-8
 # Cloud Foundry Java Buildpack
-# Copyright 2013-2016 the original author or authors.
+# Copyright 2013-2017 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,11 +35,9 @@ module JavaBuildpack
         @logger = JavaBuildpack::Logging::LoggerFactory.instance.get_logger RepositoryIndex
 
         if ENV.has_key? 'CF_REPO'
-            @default_repository_root = ENV['CF_REPO']
-                                     .chomp('/')
+            @default_repository_root = ENV['CF_REPO'].chomp('/')
         else
-            @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root']
-                                     .chomp('/')
+            @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root'].chomp('/')
         end
 
         cache.get("#{canonical repository_root}#{INDEX_PATH}") do |file|
@@ -56,7 +53,7 @@ module JavaBuildpack
       # @return [String] the URI of the file found
       def find_item(version)
         found_version = VersionResolver.resolve(version, @index.keys)
-        fail "No version resolvable for '#{version}' in #{@index.keys.join(', ')}" if found_version.nil?
+        raise "No version resolvable for '#{version}' in #{@index.keys.join(', ')}" if found_version.nil?
         uri = @index[found_version.to_s]
         [found_version, uri]
       end
@@ -78,10 +75,10 @@ module JavaBuildpack
 
       def canonical(raw)
         cooked = raw
-                   .gsub(/\{default.repository.root\}/, @default_repository_root)
-                   .gsub(/\{platform\}/, platform)
-                   .gsub(/\{architecture\}/, architecture)
-                   .chomp('/')
+                 .gsub(/\{default.repository.root\}/, @default_repository_root)
+                 .gsub(/\{platform\}/, platform)
+                 .gsub(/\{architecture\}/, architecture)
+                 .chomp('/')
         @logger.debug { "#{raw} expanded to #{cooked}" }
         cooked
       end
@@ -97,7 +94,7 @@ module JavaBuildpack
         elsif !`which lsb_release 2> /dev/null`.empty?
           `lsb_release -cs`.strip
         else
-          fail 'Unable to determine platform'
+          raise 'Unable to determine platform'
         end
       end
 

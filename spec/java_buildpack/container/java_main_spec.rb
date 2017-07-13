@@ -1,6 +1,5 @@
-# Encoding: utf-8
 # Cloud Foundry Java Buildpack
-# Copyright 2013-2016 the original author or authors.
+# Copyright 2013-2017 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,15 +60,15 @@ describe JavaBuildpack::Container::JavaMain do
 
     lib = app_dir + 'lib'
 
-    test_jar_1 = lib + 'test-jar-1.jar'
-    test_jar_2 = lib + 'test-jar-2.jar'
-    expect(test_jar_1).to exist
-    expect(test_jar_1).to be_symlink
-    expect(test_jar_1.readlink).to eq((additional_libs_directory + 'test-jar-1.jar').relative_path_from(lib))
+    test_jar1 = lib + 'test-jar-1.jar'
+    test_jar2 = lib + 'test-jar-2.jar'
+    expect(test_jar1).to exist
+    expect(test_jar1).to be_symlink
+    expect(test_jar1.readlink).to eq((additional_libs_directory + 'test-jar-1.jar').relative_path_from(lib))
 
-    expect(test_jar_2).to exist
-    expect(test_jar_2).to be_symlink
-    expect(test_jar_2.readlink).to eq((additional_libs_directory + 'test-jar-2.jar').relative_path_from(lib))
+    expect(test_jar2).to exist
+    expect(test_jar2).to be_symlink
+    expect(test_jar2.readlink).to eq((additional_libs_directory + 'test-jar-2.jar').relative_path_from(lib))
   end
 
   context do
@@ -77,7 +76,7 @@ describe JavaBuildpack::Container::JavaMain do
 
     it 'returns command' do
 
-      expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 ' \
+      expect(component.release).to eq('test-var-2 test-var-1 ' \
                                         "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                         '-cp $PWD/.:$PWD/.additional_libs/test-jar-1.jar:$PWD/' \
                                         '.additional_libs/test-jar-2.jar test-java-main-class')
@@ -87,7 +86,7 @@ describe JavaBuildpack::Container::JavaMain do
   it 'returns additional classpath entries when Class-Path is specified',
      app_fixture: 'container_main' do
 
-    expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 ' \
+    expect(component.release).to eq('test-var-2 test-var-1 ' \
                                       "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                       '-cp $PWD/.:$PWD/.additional_libs/test-jar-1.jar:$PWD/' \
                                       '.additional_libs/test-jar-2.jar:$PWD/alpha.jar:$PWD/bravo.jar:$PWD/' \
@@ -99,17 +98,17 @@ describe JavaBuildpack::Container::JavaMain do
 
     it 'returns command line arguments when they are specified' do
 
-      expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 ' \
+      expect(component.release).to eq('test-var-2 test-var-1 ' \
                                         "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                         '-cp $PWD/.:$PWD/.additional_libs/test-jar-1.jar:$PWD/.additional_libs/' \
                                         'test-jar-2.jar test-java-main-class some arguments')
     end
   end
 
-  it 'releases Spring boot applications with a JarLauncher in the MANIFEST.MF by specifying a port', :show_output,
+  it 'releases Spring boot applications with a JarLauncher in the MANIFEST.MF by specifying a port',
      app_fixture: 'container_main_spring_boot_jar_launcher' do
 
-    expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 SERVER_PORT=$PORT ' \
+    expect(component.release).to eq('test-var-2 test-var-1 SERVER_PORT=$PORT ' \
                                       "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                       '-cp $PWD/. org.springframework.boot.loader.JarLauncher')
   end
@@ -117,7 +116,7 @@ describe JavaBuildpack::Container::JavaMain do
   it 'releases Spring boot applications with a WarLauncher in the MANIFEST.MF by specifying a port',
      app_fixture: 'container_main_spring_boot_war_launcher' do
 
-    expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 SERVER_PORT=$PORT ' \
+    expect(component.release).to eq('test-var-2 test-var-1 SERVER_PORT=$PORT ' \
                                       "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                       '-cp $PWD/. org.springframework.boot.loader.WarLauncher')
   end
@@ -125,7 +124,7 @@ describe JavaBuildpack::Container::JavaMain do
   it 'releases Spring boot applications with a PropertiesLauncher in the MANIFEST.MF by specifying a port',
      app_fixture: 'container_main_spring_boot_properties_launcher' do
 
-    expect(component.release).to eq('JAVA_OPTS="test-opt-2 test-opt-1" && test-var-2 test-var-1 SERVER_PORT=$PORT ' \
+    expect(component.release).to eq('test-var-2 test-var-1 SERVER_PORT=$PORT ' \
                                       "eval exec #{qualify_path java_home.root, droplet.root}/bin/java $JAVA_OPTS " \
                                       '-cp $PWD/. org.springframework.boot.loader.PropertiesLauncher')
   end
