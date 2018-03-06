@@ -1,6 +1,6 @@
 # Encoding: utf-8
 # Cloud Foundry Java Buildpack
-# Copyright 2013-2016 the original author or authors.
+# Copyright 2013-2015 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,8 +35,13 @@ module JavaBuildpack
       def initialize(repository_root)
         @logger = JavaBuildpack::Logging::LoggerFactory.instance.get_logger RepositoryIndex
 
-        @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root']
+        if ENV.has_key? 'CF_REPO'
+            @default_repository_root = ENV['CF_REPO']
                                      .chomp('/')
+        else
+            @default_repository_root = JavaBuildpack::Util::ConfigurationUtils.load('repository')['default_repository_root']
+                                     .chomp('/')
+        end
 
         cache.get("#{canonical repository_root}#{INDEX_PATH}") do |file|
           @index = YAML.load_file(file)

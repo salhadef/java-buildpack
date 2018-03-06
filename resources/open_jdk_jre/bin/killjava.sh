@@ -19,10 +19,22 @@
 
 set -e
 
+export PATH="$PATH:/home/vcap/app/.java-buildpack/open_jdk_jre/bin"
+
+readonly LOG_DIR=/var/opt/cloudfoundry/app_logs/
+readonly HOSTNAME=$(hostname)
+readonly PID=$(pidof java)
+
 echo "
+$(date)
+
 Process Status (Before)
 =======================
 $(ps -ef)
+
+Process Tree (Before)
+=====================
+$(pstree)
 
 ulimit (Before)
 ===============
@@ -31,7 +43,15 @@ $(ulimit -a)
 Free Disk Space (Before)
 ========================
 $(df -h)
-"
+
+Java Class Historgram
+=====================
+$(jmap -histo "${PID}")
+
+Java Threads
+============
+$(kill -3 "${PID}")
+" >> "${LOG_DIR}/${HOSTNAME}.crash"
 
 pkill -9 -f .*-XX:OnOutOfMemoryError=.*killjava.*
 
@@ -40,6 +60,10 @@ Process Status (After)
 ======================
 $(ps -ef)
 
+Process Tree (After)
+====================
+$(pstree)
+
 ulimit (After)
 ==============
 $(ulimit -a)
@@ -47,4 +71,5 @@ $(ulimit -a)
 Free Disk Space (After)
 =======================
 $(df -h)
-"
+
+" >> "${LOG_DIR}/${HOSTNAME}.crash"
